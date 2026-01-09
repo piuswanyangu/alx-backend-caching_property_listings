@@ -1,11 +1,16 @@
-from django.shortcuts import render
+from django.http import JsonResponse
+from .utils import get_all_properties
 
-from django.views.decorators.cache import cache_page
-from .models import Property
-
-@cache_page(60 * 15)
 def property_list(request):
-    properties = Property.objects.all()
-    return render(request, 'properties/property_list.html',{
-        'properties' : properties
-    })
+    properties = get_all_properties()
+
+    data = [
+        {
+            'id': prop.id,
+            'title': prop.title,
+            'price': prop.price,
+            'location': prop.location,
+        }
+        for prop in properties 
+    ]
+    return JsonResponse(data, safe=False)
